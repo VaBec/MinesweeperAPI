@@ -3,4 +3,15 @@
 @main("Minesweeper") {
 
 <h1>Gamefield</h1>
+
+<div>
+    @for(field_ <- matrix.fields) {
+        @for(field <- field_) {
+            @if(field.isOpened != true) {
+                true
+            }
+        }
+    }
+
+</div>
 }
