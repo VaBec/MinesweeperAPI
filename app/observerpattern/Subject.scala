@@ -8,6 +8,9 @@ trait Subject {
   private var observers: List[Observer] = Nil
 
   def addGameListener(observer: Observer): Unit = observers = observer :: observers
-  def fireFieldUpdated(fieldMatrix: FieldMatrix, gameStatus: GameStatus): Unit = observers.foreach(_.gameFieldUpdated(fieldMatrix, gameStatus))
+  def fireFieldUpdated(fieldMatrix: FieldMatrix, gameStatus: GameStatus): Unit = {
+    println("firing update: " + observers)
+    observers.foreach(_.gameFieldUpdated(fieldMatrix, gameStatus))
+  }
 
 }

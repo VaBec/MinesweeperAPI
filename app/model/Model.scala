@@ -6,12 +6,13 @@ import observerpattern.Subject
 class Model(val difficulty: Difficulty) extends Subject {
 
   def update(fieldMatrix: FieldMatrix, flag: Boolean, x: Int, y: Int): Unit = {
-    val selectedField = fieldMatrix.get(y, x)
 
+    val selectedField = fieldMatrix.get(y, x)
     if(!ignoreClick(selectedField, flag, fieldMatrix.fields, difficulty)) {
       val newField = if(flag) {
         selectedField.flipFlag().setBombs(getSurroundingBombAmount(fieldMatrix, x, y))
       } else {
+
         selectedField.open().setBombs(getSurroundingBombAmount(fieldMatrix, x, y))
       }
 
@@ -63,11 +64,18 @@ class Model(val difficulty: Difficulty) extends Subject {
       x, y, Field(x, y, true, false, true, 0, true)
     )
 
-  def ignoreClick(field: Field, flag: Boolean, fields: Vector[Vector[Field]], difficulty: Difficulty) : Boolean = field.isOpened || (field.isFlagged && !flag) || isGameDone(fields) || isGameWon(fields, difficulty)
+  def ignoreClick(field: Field, flag: Boolean, fields: Vector[Vector[Field]], difficulty: Difficulty) : Boolean =
+    {
+      field.isOpened || (field.isFlagged && !flag) || isGameDone(fields) || isGameWon(fields, difficulty)
+    }
 
-  def isGameWon(fields: Vector[Vector[Field]], difficulty: Difficulty) : Boolean = fields.flatten.filter(!_.isBomb).count(_.isOpened) == (difficulty._1 * difficulty._2) - difficulty._3
+  def isGameWon(fields: Vector[Vector[Field]], difficulty: Difficulty) : Boolean ={
+    fields.flatten.filter(!_.isBomb).count(_.isOpened) == (difficulty._1 * difficulty._2) - difficulty._3
+  }
 
-  def isGameDone(fields: Vector[Vector[Field]]) : Boolean =  fields.flatten.filter(_.isBomb).count(_.isOpened) > 0
+  def isGameDone(fields: Vector[Vector[Field]]) : Boolean =  {
+    fields.flatten.filter(_.isBomb).count(_.isOpened) > 0
+  }
 
   def getSurroundingBombAmount(fieldMatrix: FieldMatrix, x: Int, y: Int) : Int = getNeighbours(y, x, fieldMatrix).count(_.isBomb)
 
