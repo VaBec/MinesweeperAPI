@@ -13,13 +13,14 @@ import play.api.mvc._
  * application's home page.
  */
 @Singleton
-class HomeController @Inject()(val controllerComponents: ControllerComponents) extends BaseController with Observer {
+class HomeController @Inject()(val controllerComponents: ControllerComponents) extends BaseController {
 
   val model = new Model(Difficulty.Easy)
   val controller = new Controller(model)
   val creator = new Creator
   val difficulty = 1
   val wrapper = new GameWrapper()
+
   val diff = difficulty match {
     case 1 => new Difficulty(9,9,10);
     case 2 => new Difficulty(14,14,26);
@@ -27,10 +28,10 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
     case _ => new Difficulty(9,9,10)
   }
 
-
-  model.addGameListener(this);
   model.addGameListener(wrapper);
-  println("added listener")
+
+  wrapper.setFieldMatrix(fieldMatrix)
+
   val randomBombs = creator.createRandomBombLocations(diff)
   val fieldMatrix = creator.create(diff, randomBombs)
   /**
@@ -45,23 +46,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
   }
 
   def start() = Action {
-println("start")
-//    val creator = new Creator
-//
-//    val diff = difficulty match {
-//      case 1 => new Difficulty(9,9,10);
-//      case 2 => new Difficulty(14,14,26);
-//      case 3 => new Difficulty(20,20,45);
-//      case _ => new Difficulty(9,9,10)
-//    }
-//
-//    val randomBombs = creator.createRandomBombLocations(diff)
-//    val fieldMatrix = creator.create(diff, randomBombs)
-//
-//    val model = new Model(diff)
-//    val controller = new Controller(model)
-
-    Ok(views.html.minesweeper(controller, model, fieldMatrix, wrapper.getStatus(), true))
+    Ok(views.html.minesweeper(controller, model, wrapper.getGamefield(), wrapper.getStatus(), true))
   }
 
   def restart(difficulty: Int) = Action {
@@ -75,37 +60,18 @@ println("start")
 
     val randomBombs = creator.createRandomBombLocations(diff)
     val fieldMatrix = creator.create(diff, randomBombs)
+    wrapper.setFieldMatrix(fieldMatrix)
+
     Ok(views.html.minesweeper(controller, model, fieldMatrix, wrapper.getStatus(), true))
   }
 
   def open(x:Int, y:Int) = Action {
-    controller.handleClick(x, y, fieldMatrix, false)
-    println("status: " + wrapper.getStatus())
+    controller.handleClick(x, y, wrapper.getGamefield(), false)
     Ok(views.html.minesweeper(controller, model, wrapper.getGamefield(), wrapper.getStatus(), false))
   }
 
   def flag(x:Int, y:Int) = Action {
-    controller.handleClick(x, y, fieldMatrix, true)
-    Ok("mark as Flag; x: " +x + " y: " + y)
-  }
-
-  def print_wui(): Unit = Action {
-    println("action")
-    Redirect(routes.HomeController.start())
-  }
-
-  override def gameFieldUpdated(fieldMatrix: FieldMatrix, gameStatus: GameStatus):Unit= {
-    println("gamefield_updated: "+ gameStatus+ " matrix: ")
-    updateField()
-  }
-
-  def updateField() = Action {
-    println("updating")
-//    Redirect(routes.HomeController.start())
-//    println("redirected")
-//    Action {
-//      println("updated")
-      Ok("updated")
-//    }
+    controller.handleClick(x, y, wrapper.getGamefield(), true)
+    Ok(views.html.minesweeper(controller, model, wrapper.getGamefield(), wrapper.getStatus(), false))
   }
 }

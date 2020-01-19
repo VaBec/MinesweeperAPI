@@ -2,24 +2,21 @@
 
 @main("Minesweeper") {
 
-
-<!--bombUnicode: String = "\uD83D\uDCA3"-->
-<!--squareUnicode: String = "\u2B1B"-->
-<!--flagUnicode: String = "\u2690"-->
-<!--numberPrefixUnicode: Int = 9312-->
-<!--noSurroundingBombsUnicode: String = "\u25A1"-->
-
 <h1>Good Luck!</h1>
     @if(status == model.GameStatus.InProgress || isStartField){
         <div>
             @for(field_ <- matrix.fields) {
             <br>
                 @for(field <- field_) {
-                    @if(field.isOpened && field.isFlagged) { \u2690 }
-                    @if(field.isOpened && field.surroundingBombs == 0) {
+                    @if(field.isOpened && field.isFlagged) {
+                        <a href="/open/@field.xLocation/@field.yLocation">\u2690</a>
+                    } else if(field.isOpened && field.surroundingBombs == 0) {
                         <a href="/open/@field.xLocation/@field.yLocation">\u25A1</a>
+                    } else if(field.isOpened && field.surroundingBombs > 0) {
+                        <a href="/open/@field.xLocation/@field.yLocation"> [@field.surroundingBombs] </a>
+                    } else {
+                        <a href="/open/@field.xLocation/@field.yLocation">\u2B1B</a>
                     }
-            @if(field.isOpened && field.surroundingBombs > 0) { @field.surroundingBombs } else { <a href="/open/@field.xLocation/@field.yLocation">\u2B1B</a> }
                 }
             }
         </div>

@@ -13,10 +13,14 @@ case class GameWrapper() extends Observer {
   }
 
   def getGamefield(): FieldMatrix = {
-      field
+    field
   }
 
   def getStatus(): GameStatus = {
     status
+  }
+
+  def setFieldMatrix(matrix: FieldMatrix): Unit = {
+      field=matrix
   }
 }
