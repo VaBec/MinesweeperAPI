@@ -2,7 +2,7 @@ package controllers
 
 import controller.Controller
 import javax.inject._
-import model.{Creator, Difficulty, FieldMatrix, Model}
+import model.{Creator, Difficulty, FieldMatrix, GameWrapper, Model}
 import model.Difficulty.Difficulty
 import model.GameStatus.GameStatus
 import observerpattern.Observer
@@ -19,6 +19,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
   val controller = new Controller(model)
   val creator = new Creator
   val difficulty = 1
+  val wrapper = new GameWrapper()
   val diff = difficulty match {
     case 1 => new Difficulty(9,9,10);
     case 2 => new Difficulty(14,14,26);
@@ -28,6 +29,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
 
 
   model.addGameListener(this);
+  model.addGameListener(wrapper);
   println("added listener")
   val randomBombs = creator.createRandomBombLocations(diff)
   val fieldMatrix = creator.create(diff, randomBombs)
@@ -59,7 +61,7 @@ println("start")
 //    val model = new Model(diff)
 //    val controller = new Controller(model)
 
-    Ok(views.html.minesweeper(controller, model, fieldMatrix))
+    Ok(views.html.minesweeper(controller, model, fieldMatrix, wrapper.getStatus(), true))
   }
 
   def restart(difficulty: Int) = Action {
@@ -73,14 +75,13 @@ println("start")
 
     val randomBombs = creator.createRandomBombLocations(diff)
     val fieldMatrix = creator.create(diff, randomBombs)
-    Ok(views.html.minesweeper(controller, model, fieldMatrix))
+    Ok(views.html.minesweeper(controller, model, fieldMatrix, wrapper.getStatus(), true))
   }
 
   def open(x:Int, y:Int) = Action {
     controller.handleClick(x, y, fieldMatrix, false)
-    //controller.HomeController.update
-    Redirect(routes.HomeController.start())
-    //Ok(views.html.minesweeper(controller, model, fieldMatrix))
+    println("status: " + wrapper.getStatus())
+    Ok(views.html.minesweeper(controller, model, wrapper.getGamefield(), wrapper.getStatus(), false))
   }
 
   def flag(x:Int, y:Int) = Action {
@@ -98,13 +99,13 @@ println("start")
     updateField()
   }
 
-  def updateField() = {
+  def updateField() = Action {
     println("updating")
 //    Redirect(routes.HomeController.start())
 //    println("redirected")
 //    Action {
 //      println("updated")
-//      Ok("updated")
+      Ok("updated")
 //    }
   }
 }

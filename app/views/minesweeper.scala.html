@@ -1,4 +1,4 @@
-@(gameController:controller.Controller, gameModel:model.Model, matrix:model.FieldMatrix)
+@(gameController:controller.Controller, gameModel:model.Model, matrix:model.FieldMatrix, status:model.GameStatus.GameStatus, isStartField:Boolean)
 
 @main("Minesweeper") {
 
@@ -9,20 +9,34 @@
 <!--numberPrefixUnicode: Int = 9312-->
 <!--noSurroundingBombsUnicode: String = "\u25A1"-->
 
-<h1>Gamefield</h1>
-
-<div>
-    @for(field_ <- matrix.fields) {
-    <br>
-        @for(field <- field_) {
-            @if(field.isOpened) {O}
-            @if(field.isFlagged) {\u2690}
-            @if(field.isOpened && field.surroundingBombs == 0) {\u25A1}
-            @if(field.isOpened && field.surroundingBombs > 0) {
-                (numberPrefixUnicode + field.surroundingBombs - 1).toChar.toString
-            }else{\u2B1B}
-        }
+<h1>Good Luck!</h1>
+    @if(status == model.GameStatus.InProgress || isStartField){
+        <div>
+            @for(field_ <- matrix.fields) {
+            <br>
+                @for(field <- field_) {
+                    @if(field.isOpened && field.isFlagged) { \u2690 }
+                    @if(field.isOpened && field.surroundingBombs == 0) {
+                        <a href="/open/@field.xLocation/@field.yLocation">\u25A1</a>
+                    }
+            @if(field.isOpened && field.surroundingBombs > 0) { @field.surroundingBombs } else { <a href="/open/@field.xLocation/@field.yLocation">\u2B1B</a> }
+                }
+            }
+        </div>
+        <div>
+            <br>
+            <button onclick="location.href = '/restart/1';" id="myButton" class="submit-button" >Easy</button>
+            <button onclick="location.href = '/restart/2';" id="myButton2" class="submit-button" >Medium</button>
+            <button onclick="location.href = '/restart/3';" id="myButton3" class="submit-button" >Hard</button>
+        </div>
+    } else if (status != model.GameStatus.InProgress) {
+        You @status!
+        <div>
+            <br>
+            <button onclick="location.href = '/restart/1';" id="myButton4" class="submit-button" >Easy</button>
+            <button onclick="location.href = '/restart/2';" id="myButton5" class="submit-button" >Medium</button>
+            <button onclick="location.href = '/restart/3';" id="myButton6" class="submit-button" >Hard</button>
+        </div>
     }
 
-</div>
 }
