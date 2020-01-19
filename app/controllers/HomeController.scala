@@ -30,10 +30,10 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
 
   model.addGameListener(wrapper);
 
-  wrapper.setFieldMatrix(fieldMatrix)
-
   val randomBombs = creator.createRandomBombLocations(diff)
   val fieldMatrix = creator.create(diff, randomBombs)
+  wrapper.setFieldMatrix(fieldMatrix)
+
   /**
    * Create an Action to render an HTML page.
    *
@@ -41,12 +41,12 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
    * will be called when the application receives a `GET` request with
    * a path of `/`.
    */
-  def index() = Action { implicit request: Request[AnyContent] =>
+  def index() = Action {
     Ok(views.html.index())
   }
 
   def start() = Action {
-    Ok(views.html.minesweeper(controller, model, wrapper.getGamefield(), wrapper.getStatus(), true))
+    Ok(views.html.minesweeper(controller, model, fieldMatrix, wrapper.getStatus(), true))
   }
 
   def restart(difficulty: Int) = Action {
